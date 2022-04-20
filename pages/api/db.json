@@ -1,0 +1,8 @@
+{
+  "posts": [
+    {
+      "main": "NOTE! useState itu async juga, jadi kalau di klik masih ada proses lain, ga langsung ke set ",
+      "id": 1
+    }
+  ]
+}
