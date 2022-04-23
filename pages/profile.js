@@ -5,9 +5,12 @@ import Widgets from "./components/Widgets";
 import Profile from "./components/Profile";
 import Head from "next/head";
 import { useSelector } from "react-redux";
+import { API_URL } from "../helpers";
 
 const ProfilePage = () => {
-  const { username, fullname } = useSelector((state) => state.user);
+  const { username, fullname, profilepicture } = useSelector(
+    (state) => state.user
+  );
 
   return (
     <div>
@@ -20,7 +23,11 @@ const ProfilePage = () => {
       <main className="bg-slate-200 min-h-screen max-w-screen mx-auto">
         <Navbar />
         <div className="flex flex-row min-h-screen">
-          <Menu username={username} fullname={fullname} />
+          <Menu
+            username={username}
+            fullname={fullname}
+            image_url={`${API_URL}${profilepicture}`}
+          />
           <Profile username={username} />
           <Widgets />
           {/* Modal */}

@@ -9,8 +9,9 @@ import OutsideClickHandler from "./OutsideClickHandler";
 import { API_URL } from "../../helpers";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
-export const Post = () => {
+export const Post = ({ newPost }) => {
   // const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: false });
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState({
@@ -18,6 +19,7 @@ export const Post = () => {
     image: "",
   });
 
+  const { profilepicture, fullname } = useSelector((state) => state.user);
   const handleInput = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -32,6 +34,10 @@ export const Post = () => {
     }
   };
 
+  const delFileUpload = () => {
+    setUpload(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -42,16 +48,12 @@ export const Post = () => {
     formData.append("data", JSON.stringify(insertData));
 
     try {
-      let token = Cookies.get("token");
-      await axios.post(`${API_URL}/post/addnewpost`, formData, {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
+      newPost(formData);
     } catch (error) {
       console.log(error);
     } finally {
       setInput({ post: "" });
+      setUpload(null);
     }
   };
 
@@ -72,28 +74,46 @@ export const Post = () => {
           <div className="text-lg font-bold px-5 py-2 border-b-2">
             What's the tea?
           </div>
-          <div className="flex px-5 py-3 items-center text-center">
-            <Avatar
-              size="md"
-              name="Dan Abrahmov"
-              src="https://bit.ly/dan-abramov"
-            />
-            <div className="w-full ml-3 ">
-              <textarea
-                name="post"
-                value={input.post}
-                className="w-full bg-inherit outline-none resize-none px-2 pt-2 font-semibold"
-                placeholder="Spill it..."
-                rows="2"
-                onChange={handleInput}
-              ></textarea>
+          <div className=" px-5 py-3 items-center text-center">
+            <div className="flex">
+              <Avatar
+                size="md"
+                name={fullname}
+                src={`${API_URL}${profilepicture}`}
+              />
+              <div className="w-full ml-3 ">
+                <textarea
+                  name="post"
+                  value={input.post}
+                  className="w-full bg-inherit outline-none resize-none px-2 pt-2 font-semibold"
+                  placeholder="Spill it..."
+                  rows="2"
+                  onChange={handleInput}
+                ></textarea>
+              </div>
+              <button
+                className="text-4xl ml-3 text-cyan-700 hover:text-slate-400"
+                type="submit"
+              >
+                <BsFillArrowUpCircleFill className="cursor-pointer active:border-2 rounded-full" />
+              </button>
             </div>
-            <button
-              className="text-4xl ml-3 text-cyan-700 hover:text-slate-400"
-              type="submit"
-            >
-              <BsFillArrowUpCircleFill className="cursor-pointer active:border-2 rounded-full" />
-            </button>
+            <div className="px-20 py-3">
+              {fileUpload ? (
+                <div>
+                  <div
+                    className="cursor-pointer absolute ml-24 mt-2 bg-slate-200 w-6 h-6 rounded-full text-slate-600"
+                    onClick={delFileUpload}
+                  >
+                    X
+                  </div>
+                  <img
+                    src={URL.createObjectURL(fileUpload)}
+                    className="object-cover w-32 h-32 rounded-lg"
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
           <Collapse in={isOpen}>
             <div className="pl-20 border-t-2 py-1 flex">

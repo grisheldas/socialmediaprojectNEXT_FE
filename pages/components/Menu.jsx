@@ -24,8 +24,9 @@ import PostIcon from "./PostIcon";
 import { AiOutlineGif } from "react-icons/ai";
 import { MdLocationOn } from "react-icons/md";
 import Link from "next/link";
+import { API_URL } from "../../helpers";
 
-const Menu = ({ username, fullname }) => {
+const Menu = ({ username, fullname, image_url }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const Profile = () => {
@@ -33,11 +34,7 @@ const Menu = ({ username, fullname }) => {
       <Link href={"/profile"}>
         <div className="bg-slate-200 mx-4 mt-4 mb-2 h-20 rounded-lg border-2 border-slate-300 cursor-pointer">
           <div className="flex py-3 px-4">
-            <Avatar
-              size="md"
-              name="Dan Abrahmov"
-              src="https://bit.ly/dan-abramov"
-            />
+            <Avatar size="md" name={fullname} src={image_url} />
             <div className="ml-4">
               <div className="font-bold ">{fullname}</div>
               <div className="text-sm text-slate-500">@{username}</div>

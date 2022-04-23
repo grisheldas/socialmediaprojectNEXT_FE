@@ -6,9 +6,12 @@ import Navbar from "./components/Navbar";
 import Widgets from "./components/Widgets";
 import { SiGitea } from "react-icons/si";
 import { useSelector } from "react-redux";
+import { API_URL } from "../helpers";
 
 export default function Home() {
-  const { username, fullname } = useSelector((state) => state.user);
+  const { username, fullname, profilepicture } = useSelector(
+    (state) => state.user
+  );
   return (
     <div className={styles.container}>
       <Head>
@@ -20,7 +23,11 @@ export default function Home() {
       <main className="bg-slate-200 min-h-screen max-w-screen mx-auto">
         <Navbar />
         <div className="flex flex-row min-h-screen">
-          <Menu username={username} fullname={fullname} />
+          <Menu
+            username={username}
+            fullname={fullname}
+            image_url={`${API_URL}${profilepicture}`}
+          />
           <Feeds />
           <Widgets />
         </div>

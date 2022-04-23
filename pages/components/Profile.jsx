@@ -28,7 +28,7 @@ const Profile = ({ updateProfileAction }) => {
   const [input, setInput] = useState({
     fullname: fullname,
     username: username,
-    profilepicture: profilepicture,
+    image: profilepicture,
     bio: bio,
   });
 
@@ -57,8 +57,11 @@ const Profile = ({ updateProfileAction }) => {
     formData.append("profilepicture", fileUpload);
     formData.append("data", JSON.stringify(insertData));
     updateProfileAction(formData);
-    // console.log(`${API_URL}${profilepicture}`);
     onClose();
+  };
+
+  const closeEdit = () => {
+    setUpload(null);
   };
 
   const ProfileBar = () => {
@@ -84,19 +87,11 @@ const Profile = ({ updateProfileAction }) => {
           {/* header pic */}
         </div>
         <div className="absolute top-[25vh] left-[92vh] rounded-full border-4 border-slate-100">
-          {profilepicture ? (
-            <Avatar
-              size="2xl"
-              name="Dan Abrahmov"
-              src={`${API_URL}${profilepicture}`}
-            />
-          ) : (
-            <Avatar
-              size="2xl"
-              name="Dan Abrahmov"
-              src="https://bit.ly/dan-abramov"
-            />
-          )}
+          <Avatar
+            size="2xl"
+            name={fullname}
+            src={`${API_URL}${profilepicture}`}
+          />
         </div>
         <div
           className="group absolute right-[50vh] mt-2 hover:bg-slate-200  p-2 rounded-lg cursor-pointer"
@@ -109,7 +104,7 @@ const Profile = ({ updateProfileAction }) => {
         <Modal isOpen={isOpen} onClose={onClose} size={"2xl"}>
           <ModalOverlay />
           <ModalContent>
-            <ModalCloseButton className="mr-6 mt-7" />
+            <ModalCloseButton className="mr-6 mt-7" onClick={closeEdit} />
             <ModalBody className="mb-5">
               <form onSubmit={onSaveDataHandle}>
                 <div className="mt-5 h-[20vh] bg-cyan-800 rounded-t-lg"></div>
@@ -117,20 +112,28 @@ const Profile = ({ updateProfileAction }) => {
                   type="file"
                   className="hidden"
                   onChange={onFileChange}
-                  id="profilepicture"
-                  name="profilepicture" // image masih error
+                  id="image"
+                  name="image"
                   accept=".jpg,.jpeg,.png"
                 />
                 <label
-                  for="profilepic"
+                  for="image"
                   type="button"
                   className="absolute top-[16vh] left-[8vh] rounded-full border-4 border-slate-100"
                 >
-                  <Avatar
-                    size="xl"
-                    name="Dan Abrahmov"
-                    src="https://bit.ly/dan-abramov"
-                  />
+                  {fileUpload ? (
+                    <Avatar
+                      size="xl"
+                      name={fullname}
+                      src={URL.createObjectURL(fileUpload)}
+                    />
+                  ) : (
+                    <Avatar
+                      size="xl"
+                      name={fullname}
+                      src={`${API_URL}${profilepicture}`}
+                    />
+                  )}
                 </label>
                 <div className=" px-9 pb-10 rounded-b-lg border-2 border-slate-100">
                   <div className="flex">

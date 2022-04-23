@@ -3,7 +3,7 @@ import { Avatar } from "@chakra-ui/react";
 import { BiComment, BiLike, BiShare } from "react-icons/bi";
 import { HiOutlineBookmark, HiOutlineDotsHorizontal } from "react-icons/hi";
 
-function Status() {
+function Status({ fullname, username, caption }) {
   const PostIcon = ({ Icon, title }) => {
     return (
       <div className="flex items-center text-slate-500 mx-14">
@@ -19,20 +19,15 @@ function Status() {
         <div className="flex">
           <Avatar />
           <div className="ml-3">
-            <div className="font-bold">Your name</div>
-            <div className="text-slate-500 text-sm">@yourusername</div>
+            <div className="font-bold">{fullname}</div>
+            <div className="text-slate-500 text-sm">@{username}</div>
           </div>
         </div>
         <div>
           <HiOutlineDotsHorizontal className="text-lg text-slate-500" />
         </div>
       </div>
-      <div className="px-5 pb-5">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptate
-        officiis nihil alias facilis. Assumenda voluptatem eos nesciunt placeat
-        tempore amet fuga cupiditate eveniet. Esse cumque quae natus deserunt!
-        Quo, deleniti.
-      </div>
+      <div className="px-5 pb-5">{caption}</div>
       <div className="flex justify-between mx-5 py-2 border-t-2">
         <PostIcon Icon={BiComment} title={"Comment"} />
         <PostIcon Icon={BiLike} title={"Like"} />
