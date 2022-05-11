@@ -38,7 +38,7 @@ const Profile = ({
 
   const [input, setInput] = useState({
     fullname: fullname,
-    username: username,
+    // username: username,
     image: profilepicture,
     bio: bio,
   });
@@ -71,7 +71,7 @@ const Profile = ({
     onClose();
     setInput({
       fullname: fullname,
-      username: username,
+      // username: username,
       image: profilepicture,
       bio: bio,
     });
@@ -154,7 +154,7 @@ const Profile = ({
           <div className="px-5 py-2 bg-cyan-800 rounded-t-lg h-[23vh]">
             {/* header pic */}
           </div>
-          {/* <div className="absolute top-[25vh] left-[92vh] rounded-full border-4 border-slate-100"> */}
+
           <div className="absolute left-[50%] xl:left-[40%] top-24 rounded-full border-4 border-slate-100">
             <Avatar
               size="2xl"
@@ -224,7 +224,7 @@ const Profile = ({
                         <div className="mb-1 ml-1">Username</div>
                         <Input
                           focusBorderColor="cyan.400"
-                          placeholder="@username"
+                          placeholder={username}
                           variant="filled"
                           htmlSize={26}
                           width="auto"
