@@ -1,16 +1,129 @@
-import React from "react";
-import Menu from "./components/Menu";
-import Navbar from "./components/Navbar";
-import Widgets from "./components/Widgets";
-import Profile from "./components/Profile";
+import React, { useEffect, useState } from "react";
+import Menu from "./../components/Menu";
+import Navbar from "./../components/Navbar";
+import Widgets from "./../components/Widgets";
+import Profile from "./../components/Profile";
 import Head from "next/head";
 import { useSelector } from "react-redux";
 import { API_URL } from "../helpers";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const ProfilePage = () => {
   const { username, fullname, profilepicture } = useSelector(
     (state) => state.user
   );
+
+  const [page, setPage] = useState(0);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [posts, setPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+
+  const [mediaPage, setMediaPage] = useState(0);
+  const [totalMediaPosts, setTotalMediaPosts] = useState(0);
+  const [mediaPosts, setMediaPosts] = useState([]);
+  const [mediaHasMore, setMediaHasMore] = useState(true);
+
+  const [likedPage, setlikedPage] = useState(0);
+  const [totallikedPosts, setTotallikedPosts] = useState(0);
+  const [likedPosts, setlikedPosts] = useState([]);
+  const [likedHasMore, setlikedHasMore] = useState(true);
+
+  const getPost = async () => {
+    let token = Cookies.get("token");
+    let res = await axios.get(`${API_URL}/post/fetchuserposts?page=0`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+    setPosts([res.data[0], ...posts]);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+    fetchMedia();
+    fetchLiked();
+  }, []);
+
+  const fetchPosts = async () => {
+    if (hasMore) {
+      let token = Cookies.get("token");
+      let res = await axios.get(`${API_URL}/post/fetchuserposts?page=${page}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      setTotalPosts(parseInt(res.headers["x-userposts-count"]));
+
+      if (res.data.length === 0) setHasMore(false);
+      setPosts([...posts, ...res.data]);
+      setPage(page + 1);
+    }
+  };
+
+  const fetchMedia = async () => {
+    if (mediaHasMore) {
+      let token = Cookies.get("token");
+      let res = await axios.get(
+        `${API_URL}/post/fetchusermediaposts?page=${page}`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setTotalMediaPosts(parseInt(res.headers["x-usermediaposts-count"]));
+
+      if (res.data.length === 0) setMediaHasMore(false);
+      setMediaPosts([...mediaPosts, ...res.data]);
+      setMediaPage(mediaPage + 1);
+    }
+  };
+
+  const fetchLiked = async () => {
+    if (likedHasMore) {
+      let token = Cookies.get("token");
+      let res = await axios.get(
+        `${API_URL}/post/fetchuserlikedposts?page=${page}`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setTotallikedPosts(parseInt(res.headers["x-userlikedposts-count"]));
+
+      if (res.data.length === 0 || likedPosts === totallikedPosts)
+        setlikedHasMore(false);
+      setlikedPosts([...likedPosts, ...res.data]);
+      setlikedPage(likedPage + 1);
+    }
+  };
+
+  const newPost = async (val) => {
+    try {
+      let token = Cookies.get("token");
+      await axios.post(`${API_URL}/post/addnewpost`, val, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPage(0);
+      setHasMore(true);
+      setTotalPosts(0);
+      setPosts([]);
+      getPost();
+    }
+  };
+
+  const [toggleState, setToggleState] = useState(1);
+
+  const toggleTab = (index) => {
+    setToggleState(index);
+  };
 
   return (
     <div>
@@ -22,15 +135,56 @@ const ProfilePage = () => {
 
       <main className="bg-slate-200 min-h-screen max-w-screen mx-auto">
         <Navbar />
-        <div className="flex flex-row min-h-screen">
-          <Menu
-            username={username}
-            fullname={fullname}
-            image_url={`${API_URL}${profilepicture}`}
-          />
-          <Profile username={username} />
-          <Widgets />
-          {/* Modal */}
+        <div className="grid grid-cols-12 min-h-screen">
+          <div className="col-span-3 bg-slate-100 mr-2 2xl:mr-16 xl:mr-2">
+            <Menu
+              username={username}
+              fullname={fullname}
+              image_url={`${API_URL}${profilepicture}`}
+              newPost={newPost}
+            />
+          </div>
+          <div className="col-span-6">
+            {toggleState === 1 ? (
+              <Profile
+                username={username}
+                fetchData={fetchPosts}
+                posts={posts}
+                hasMore={hasMore}
+                toggleTab={toggleTab}
+                toggleState={toggleState}
+              />
+            ) : (
+              <div className="hidden"></div>
+            )}
+            {toggleState === 2 ? (
+              <Profile
+                username={username}
+                fetchData={fetchMedia}
+                posts={mediaPosts}
+                hasMore={mediaHasMore}
+                toggleTab={toggleTab}
+                toggleState={toggleState}
+              />
+            ) : (
+              <div className="hidden"></div>
+            )}
+            {toggleState === 3 ? (
+              <Profile
+                username={username}
+                fetchData={fetchLiked}
+                posts={likedPosts}
+                hasMore={likedHasMore}
+                toggleTab={toggleTab}
+                toggleState={toggleState}
+              />
+            ) : (
+              <div className="hidden"></div>
+            )}
+          </div>
+          <div className="col-span-3 bg-slate-100 ml-16 2xl:ml-16 xl:ml-6 ">
+            <Widgets />
+          </div>
         </div>
       </main>
     </div>

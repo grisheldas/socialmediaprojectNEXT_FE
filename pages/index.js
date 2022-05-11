@@ -1,17 +1,109 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import Feeds from "./components/Feeds";
-import Menu from "./components/Menu";
-import Navbar from "./components/Navbar";
-import Widgets from "./components/Widgets";
+import Feeds from "../components/Feeds";
+import Menu from "../components/Menu";
+import Navbar from "../components/Navbar";
+import Widgets from "../components/Widgets";
 import { SiGitea } from "react-icons/si";
 import { useSelector } from "react-redux";
 import { API_URL } from "../helpers";
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function Home() {
   const { username, fullname, profilepicture } = useSelector(
     (state) => state.user
   );
+
+  const [page, setPage] = useState(0);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [posts, setPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+
+  const getPost = async () => {
+    let token = Cookies.get("token");
+    let res = await axios.get(`${API_URL}/post/fetchposts?page=0`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+    setPosts([res.data[0], ...posts]);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    if (hasMore) {
+      let token = Cookies.get("token");
+      let res = await axios.get(`${API_URL}/post/fetchposts?page=${page}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      setTotalPosts(parseInt(res.headers["x-total-count"]));
+
+      if (res.data.length === 0) setHasMore(false);
+      setPosts([...posts, ...res.data]);
+      setPage(page + 1);
+    }
+  };
+
+  const newPost = async (val) => {
+    try {
+      let token = Cookies.get("token");
+      await axios.post(`${API_URL}/post/addnewpost`, val, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPage(0);
+      setHasMore(true);
+      setTotalPosts(0);
+      setPosts([]);
+      getPost();
+    }
+  };
+
+  const sendEmailVerification = async () => {
+    try {
+      let token = Cookies.get("token");
+      await axios.get(`${API_URL}/auth/sendverificationemail`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      await toast.success(
+        "Send email success, please check your email to complete the process",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          closeOnClick: true,
+          draggable: true,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+
+      await toast.error(
+        error.response.data.message || "Send email failed, network error.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          closeOnClick: true,
+          draggable: true,
+        }
+      );
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -22,14 +114,26 @@ export default function Home() {
 
       <main className="bg-slate-200 min-h-screen max-w-screen mx-auto">
         <Navbar />
-        <div className="flex flex-row min-h-screen">
-          <Menu
-            username={username}
-            fullname={fullname}
-            image_url={`${API_URL}${profilepicture}`}
-          />
-          <Feeds />
-          <Widgets />
+        <div className="grid grid-cols-12 min-h-screen">
+          <div className="col-span-3 bg-slate-100 mr-2 2xl:mr-16 xl:mr-2">
+            <Menu
+              username={username}
+              fullname={fullname}
+              image_url={`${API_URL}${profilepicture}`}
+              newPost={newPost}
+            />
+          </div>
+          <div className="col-span-6">
+            <Feeds
+              newPost={newPost}
+              fetchData={fetchPosts}
+              posts={posts}
+              hasMore={hasMore}
+            />
+          </div>
+          <div className="col-span-3 bg-slate-100 ml-16 2xl:ml-16 xl:ml-6">
+            <Widgets sendEmailVerification={sendEmailVerification} />
+          </div>
         </div>
       </main>
     </div>

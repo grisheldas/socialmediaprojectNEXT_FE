@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { AxiosInstance } from "../../helpers";
+import { AxiosInstance } from "../helpers";
 
 const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();

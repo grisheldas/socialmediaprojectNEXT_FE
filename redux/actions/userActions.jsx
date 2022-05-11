@@ -23,12 +23,15 @@ export const loginAction = ({ username, password }) => {
         draggable: true,
       });
     } catch (error) {
-      toast.error(error.message || "Login failed, network error", {
-        position: "top-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        draggable: true,
-      });
+      toast.error(
+        error.response.data.message || "Login failed, network error",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          closeOnClick: true,
+          draggable: true,
+        }
+      );
     } finally {
       dispatch({ type: "DONE" });
     }
@@ -44,11 +47,7 @@ export const registerAction = ({ ...values }) => {
         ...values,
       });
       console.log(res1.data);
-      // let res = await axios.post(`http://localhost:5000/auth/login`, {
-      //   username,
-      //   email: username,
-      //   password,
-      // });
+
       dispatch({ type: "LOGIN", payload: res1.data });
       console.log(res1.data, "ini data");
       console.log(res1.headers, "ini headers");
@@ -65,7 +64,7 @@ export const registerAction = ({ ...values }) => {
       );
     } catch (error) {
       // error.res1.data.message ||
-      toast.error("Network error", {
+      toast.error(error.response.data.message || "Network error", {
         position: "top-right",
         autoClose: 3000,
         closeOnClick: true,
@@ -93,7 +92,7 @@ export const updateProfileAction = (formData) => {
         position: "top-right",
       });
     } catch (error) {
-      toast.error("Update failed", {
+      toast.error(error.response.data.message || "Update failed", {
         position: "top-right",
         autoClose: 3000,
         closeOnClick: true,

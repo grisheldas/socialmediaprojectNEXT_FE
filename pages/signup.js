@@ -12,13 +12,7 @@ import * as Yup from "yup";
 export const Signup = ({ registerAction }) => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
-
-  // const [input, setInput] = useState({
-  //   username: "",
-  //   password: "",
-  //   confirmPassword: "",
-  //   email: "",
-  // });
+  const [disable, setDisable] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -49,31 +43,14 @@ export const Signup = ({ registerAction }) => {
   });
 
   const { isLogin } = useSelector((state) => state.user);
-  // const handleInput = (e, prop) => {
-  //   setInput({ ...input, [prop]: e.target.value });
-  // };
-
-  // const registerHandle = (e) => {
-  //   e.preventDefault();
-  //   if (input.password !== input.confirmPassword) {
-  //     toast.error("Password is invalid", {
-  //       position: "top-right",
-  //       autoClose: 3000,
-  //       closeOnClick: true,
-  //       draggable: true,
-  //     });
-  //   }
-  //   registerAction(input);
-  //   console.log("asdjnakjdsn");
-  //   console.log(isLogin);
-  // };
 
   const router = useRouter();
+
   useEffect(() => {
     if (isLogin) {
-      router.replace("/");
+      router.push("/");
     }
-  }, []);
+  }, [isLogin]);
 
   return (
     <div className="flex flex-grow min-h-screen bg-cyan-900 items-center">

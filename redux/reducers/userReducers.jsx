@@ -7,6 +7,7 @@ const INITIAL_STATE = {
   profilepicture: "",
   bio: "",
   fullname: "",
+  isVerified: 0,
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {

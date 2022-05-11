@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { store } from "../redux/reducers";
 import "../styles/globals.css";
-import AuthProvider from "./components/AuthProvider";
+import AuthProvider from "../components/AuthProvider";
 import "react-toastify/dist/ReactToastify.css";
 
 function MyApp({ Component, pageProps }) {

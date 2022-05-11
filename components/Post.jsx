@@ -6,9 +6,7 @@ import { Avatar, Collapse, useDisclosure } from "@chakra-ui/react";
 import PostIcon from "./PostIcon";
 import React, { useState } from "react";
 import OutsideClickHandler from "./OutsideClickHandler";
-import { API_URL } from "../../helpers";
-import Cookies from "js-cookie";
-import axios from "axios";
+import { API_URL } from "../helpers";
 import { useSelector } from "react-redux";
 
 export const Post = ({ newPost }) => {
@@ -19,7 +17,9 @@ export const Post = ({ newPost }) => {
     image: "",
   });
 
-  const { profilepicture, fullname } = useSelector((state) => state.user);
+  const { profilepicture, fullname, isVerified } = useSelector(
+    (state) => state.user
+  );
   const handleInput = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -58,7 +58,7 @@ export const Post = ({ newPost }) => {
   };
 
   return (
-    <div>
+    <div className="bg-slate-100 rounded-lg shadow-md">
       <OutsideClickHandler
         onOutsideClick={() => {
           setIsOpen(false);
@@ -67,10 +67,7 @@ export const Post = ({ newPost }) => {
           setIsOpen(true);
         }}
       >
-        <form
-          className="bg-slate-100 rounded-lg shadow-md"
-          onSubmit={handleSubmit}
-        >
+        <form onSubmit={handleSubmit}>
           <div className="text-lg font-bold px-5 py-2 border-b-2">
             What's the tea?
           </div>
@@ -91,12 +88,22 @@ export const Post = ({ newPost }) => {
                   onChange={handleInput}
                 ></textarea>
               </div>
-              <button
-                className="text-4xl ml-3 text-cyan-700 hover:text-slate-400"
-                type="submit"
-              >
-                <BsFillArrowUpCircleFill className="cursor-pointer active:border-2 rounded-full" />
-              </button>
+              {!isVerified ? (
+                <button
+                  className="text-4xl ml-3 text-slate-500 "
+                  type="submit"
+                  disabled={true}
+                >
+                  <BsFillArrowUpCircleFill className="cursor-not-allowed rounded-full" />
+                </button>
+              ) : (
+                <button
+                  className="text-4xl ml-3 text-cyan-700 hover:text-slate-400"
+                  type="submit"
+                >
+                  <BsFillArrowUpCircleFill className="cursor-pointer active:border-2 rounded-full" />
+                </button>
+              )}
             </div>
             <div className="px-20 py-3">
               {fileUpload ? (

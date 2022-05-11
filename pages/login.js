@@ -10,6 +10,7 @@ export const Login = ({ loginAction }) => {
   // password field chakra state
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
+  const [disable, setDisable] = useState(false);
 
   // login state setup and handle
   const [input, setInput] = useState({
@@ -24,8 +25,13 @@ export const Login = ({ loginAction }) => {
   };
   const loginHandle = (e) => {
     e.preventDefault();
-    loginAction(input);
-    console.log("aksdaksdkasd");
+    try {
+      setDisable(true);
+      loginAction(input);
+      console.log("aksdaksdkasd");
+    } finally {
+      setDisable(false);
+    }
   };
 
   // redirect when isLogin is true
@@ -70,12 +76,22 @@ export const Login = ({ loginAction }) => {
               </Button>
             </InputRightElement>
           </InputGroup>
-          <button
-            type="submit"
-            className="w-full bg-slate-300 p-3 mt-5 text-center rounded-lg font-semibold cursor-pointer hover:bg-slate-400"
-          >
-            Login
-          </button>
+          {disable ? (
+            <button
+              type="submit"
+              disabled
+              className="w-full bg-slate-500 p-3 mt-5 text-center rounded-lg font-semibold cursor-pointer "
+            >
+              Login
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="w-full bg-slate-300 p-3 mt-5 text-center rounded-lg font-semibold cursor-pointer hover:bg-slate-400"
+            >
+              Login
+            </button>
+          )}
         </form>
         <Link href={"/signup"}>
           <div
